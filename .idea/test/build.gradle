@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.lab'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // 其他依赖...
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1' // 版本号可能略有不同
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform() // 这一行非常重要，告诉 gradle 使用 JUnit5 运行测试
+}
