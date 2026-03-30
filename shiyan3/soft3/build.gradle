@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'jacoco'      // 开启覆盖率插件
+    id 'checkstyle'  // 开启代码规范检查插件
+}
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+}
+
+test {
+    useJUnitPlatform()
+    // 测试完成后自动生成报告
+    finalizedBy jacocoTestReport
+}
+
+// JaCoCo 报告配置
+jacocoTestReport {
+    dependsOn test // 确保先运行测试再生成报告
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+// Checkstyle 配置（如果提示找不到文件，可以先注释掉下面这几行）
+checkstyle {
+    toolVersion = '8.45'  // 适配 Java 8 的版本
+    ignoreFailures = true
+    showViolations = true
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
