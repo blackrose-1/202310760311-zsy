@@ -1,0 +1,73 @@
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
+
+plugins {
+    id "java"
+    id "com.github.spotbugs" version "6.0.22"
+    id "jacoco"
+    id "checkstyle"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    spotbugsPlugins "com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0"
+}
+
+// SpotBugs 配置块 - 使用最稳妥的 valueOf 写法
+spotbugs {
+    toolVersion = "4.8.6"
+
+    // 使用 valueOf 强制从字符串转换成枚举对象，规避 Class 解析错误
+    effort.set(Effort.valueOf("DEFAULT"))
+    reportLevel.set(Confidence.valueOf("LOW"))
+
+    ignoreFailures = true
+    showStackTraces = true
+    showProgress = true
+    maxHeapSize = '2g'
+    extraArgs = [ '-nested:false' ]
+    jvmArgs = [ '-Duser.language=en' ]
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required.set(true)
+        }
+    }
+}
+
+// JaCoCo 配置
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+// Checkstyle 配置
+checkstyle {
+    toolVersion = '10.0'
+    // 注意：如果运行报错找不到此文件，请手动在项目根目录创建该 xml
+    configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+}
+
+// 强制编译使用 UTF-8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
